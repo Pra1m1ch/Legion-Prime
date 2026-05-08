@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dota 2 Store | Главная</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🗡️ DOTA 2 STORE <small>Immortal Items</small></div>
+            <div class="cart-icon">🛒 Магазин предметов</div>
+        </div>
+    </header>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-link">🏠 Главная</a>
+            <a href="catalog.html" class="nav-link">📦 Каталог</a>
+            <a href="cart.html" class="nav-link">🛒 Корзина</a>
+        </div>
+    </nav>
+    <section class="hero">
+        <h1 class="hero-title">Легендарные предметы Dota 2</h1>
+        <p class="hero-subtitle">Эксклюзивные скины, арканы и бессмертные предметы</p>
+    </section>
+    <div class="container">
+        <h2 class="section-title">Популярные предметы</h2>
+        <div class="products" id="products"></div>
+    </div>
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">Детали предмета</span><button class="modal-close" id="modalCloseBtn">✕</button></div>
+            <div class="modal-body">
+                <div class="carousel"><button class="carousel-btn prev" id="prevBtn">‹</button><div class="carousel-main"><img id="modalImage" src=""></div><div class="carousel-thumbnails" id="thumbnails"></div><button class="carousel-btn next" id="nextBtn">›</button></div>
+                <div class="product-info"><h2 id="modalName"></h2><span id="modalRarity"></span><div class="product-info-hero"><span>🎮 Герой:</span><span id="modalHero"></span></div><p id="modalDescription"></p><div id="modalPrice"></div><button class="modal-add-to-cart" id="modalAddToCart">🛒 Добавить в корзину</button></div>
+            </div>
+        </div>
+    </div>
+    <!-- Чат-бот -->
+    <div class="chat-button" id="chatButton">🎧</div>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header"><h3>🎮 Поддержка</h3><button class="chat-close" id="chatClose">✕</button></div>
+        <div class="chat-messages" id="chatMessages"><div class="message bot">👋 Привет! Чем могу помочь?</div></div>
+        <div class="chat-options" id="chatOptions">
+            <div class="chat-option" data-question="delivery">🚚 Доставка</div>
+            <div class="chat-option" data-question="payment">💳 Оплата</div>
+            <div class="chat-option" data-question="guarantee">✅ Гарантия</div>
+            <div class="chat-option" data-question="other">📧 Другой вопрос</div>
+        </div>
+    </div>
+    <script src="products.js"></script>
+    <script src="cart-functions.js"></script>
+    <script src="chat.js"></script>
+    <script src="modal.js"></script>
+    <script>
+        function renderMainPage() {
+            const container = document.getElementById('products');
+            container.innerHTML = products.slice(0,6).map(p => `
+                <div class="card" onclick="openModal(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                    <div class="rare-badge" style="background:${getRarityColor(p.rarity)}">${p.rarity}</div>
+                    <img class="card-image" src="${p.image}"><div class="card-content">
+                    <h3 class="card-title">${p.name}</h3><p class="card-desc">${p.description}</p>
+                    <div class="price">${formatPrice(p.price)}</div>
+                    <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${p.id},'${p.name}',${p.price})">В корзину</button>
+                </div></div>`).join('');
+        }
+        document.getElementById('modalCloseBtn').onclick = closeModal;
+        document.getElementById('modalOverlay').onclick = (e) => { if(e.target === document.getElementById('modalOverlay')) closeModal(); };
+        document.getElementById('modalAddToCart').onclick = () => { if(currentProduct) { addToCart(currentProduct.id, currentProduct.name, currentProduct.price); closeModal(); } };
+        document.getElementById('prevBtn').onclick = () => { if(currentProduct?.images?.length) currentImageIndex = (currentImageIndex-1+currentProduct.images.length)%currentProduct.images.length; updateCarousel(); };
+        document.getElementById('nextBtn').onclick = () => { if(currentProduct?.images?.length) currentImageIndex = (currentImageIndex+1)%currentProduct.images.length; updateCarousel(); };
+        renderMainPage();
+    </script>
+</body>
+</html>
